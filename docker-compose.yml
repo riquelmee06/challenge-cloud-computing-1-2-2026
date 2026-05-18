@@ -7,13 +7,18 @@ services:
     ports:
       - "1521:1521"
     environment:
-      - ORACLE_PASSWORD=241006
-      - APP_USER=RM561365
-      - APP_PASSWORD=241006
+      - ORACLE_PASSWORD=310106
+      - APP_USER=RM565468
+      - APP_USER_PASSWORD=310106
     volumes:
       - oracle_data:/opt/oracle/oradata
-      - ./init-db:/container-entrypoint-initdb.d
     restart: always
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 3m
 
   patinhasemdia-api:
     build:
@@ -23,10 +28,11 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - ConnectionStrings__OracleConnection=User Id=RM561365;Password=241006;Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=oracle-db)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=FREE)));
+      - ConnectionStrings__OracleConnection=User Id=RM565468;Password=310106;Data Source=oracle-db:1521/XEPDB1;
       - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
-      - oracle-db
+      oracle-db:
+        condition: service_healthy
     restart: always
 
 volumes:
