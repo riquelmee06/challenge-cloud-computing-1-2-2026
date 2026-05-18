@@ -1,0 +1,6 @@
+@patinhasemdia_HostAddress = http://localhost:5277
+
+GET {{patinhasemdia_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

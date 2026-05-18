@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  oracle-db:
+    image: gvenzl/oracle-xe:latest
+    container_name: oracle-db
+    ports:
+      - "1521:1521"
+    environment:
+      - ORACLE_PASSWORD=241006
+      - APP_USER=RM561365
+      - APP_PASSWORD=241006
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+      - ./init-db:/container-entrypoint-initdb.d
+    restart: always
+
+  patinhasemdia-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: patinhasemdia-api
+    ports:
+      - "8080:8080"
+    environment:
+      - ConnectionStrings__OracleConnection=User Id=RM561365;Password=241006;Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=oracle-db)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=FREE)));
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - oracle-db
+    restart: always
+
+volumes:
+  oracle_data:
+    name: oracle_persistence_volume
