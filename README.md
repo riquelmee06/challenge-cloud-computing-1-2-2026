@@ -19,7 +19,15 @@
 
 O **Patinhas em Dia** é uma API RESTful desenvolvida com **ASP.NET Core (.NET 9)** e banco de dados **Oracle XE**, voltada ao acompanhamento completo da jornada de cuidados de animais domésticos — desde o cadastro de tutores e pets até o registro de eventos veterinários.
 
-Toda a solução é executada de forma **containerizada com Docker**, hospedada na **Microsoft Azure**, garantindo portabilidade, escalabilidade e reprodutibilidade total do ambiente.
+A aplicação permite:
+
+- **Gerenciamento de Tutores** — Cadastro e manutenção de responsáveis pelos pets
+- **Gestão de Pets** — Registro completo de cães, gatos e outros animais domésticos
+- **Eventos de Cuidado** — Agendamento e rastreamento de vacinações, check-ups, tosas, limpeza dental e outros procedimentos
+- **Relatórios de Saúde** — Resumo consolidado de eventos pendentes, realizados e atrasados por pet
+- **Notificação de Tarefas** — Identificação automática de cuidados preventivos em atraso
+
+Esta solução foi **conteinerizada via Docker Compose** e implantada em uma **máquina virtual Linux na Microsoft Azure**, garantindo escalabilidade, reprodutibilidade e conformidade com boas práticas de infraestrutura em nuvem.
 
 ### Stack Tecnológica
 
@@ -33,14 +41,31 @@ Toda a solução é executada de forma **containerizada com Docker**, hospedada 
 
 ## 💼 Benefícios para o Negócio
 
-| Benefício | Descrição |
-|-----------|-----------|
-| ✅ **Escalabilidade** | Solução replicável em qualquer ambiente cloud |
-| ✅ **Reprodutibilidade** | Ambiente recriado do zero com um único comando |
-| ✅ **Persistência de Dados** | Volumes Docker garantem integridade dos dados Oracle |
-| ✅ **Automação de Infraestrutura** | Provisionamento via Azure CLI com script dedicado |
-| ✅ **Facilidade de Deploy** | Toda a aplicação sobe com `docker compose up` |
-| ✅ **Segurança** | API executada com usuário `non-root` no container |
+### Agilidade no Deploy
+- Orquestração completa via **Docker Compose**: subir toda a infraestrutura com um único comando (`docker compose up -d --build`)
+- CI/CD pronto para pipelines de integração contínua
+- Redução no tempo de implementação em novos ambientes
+
+### Portabilidade Garantida
+- Ambiente de produção **idêntico** ao desenvolvimento
+- Eliminação do erro clássico "funciona na minha máquina"
+- Facilita onboarding de novos membros do time
+
+### Integridade e Persistência de Dados
+- **Volume nomeado** (`oracle_persistence_volume`) garante que os dados sobrevivem a reinicializações de containers
+- Backup automático gerenciado pela Azure
+- Recuperação em caso de falhas
+
+### Eficiência Operacional
+- Automação de infraestrutura via **Azure CLI** — criação e exclusão dinâmica de recursos
+- Otimização de custos: recursos provisionados sob demanda
+- **Health checks** automáticos garantem disponibilidade da API
+
+### Conformidade e Segurança
+- Usuário não-root dentro do container
+- Credenciais gerenciadas via variáveis de ambiente
+- Isolamento de rede via Docker Network (Bridge)
+- Registros auditáveis via logs centralizados
 
 ---
 
@@ -142,6 +167,7 @@ services:
       - APP_USER_PASSWORD=310106
     volumes:
       - oracle_data:/opt/oracle/oradata
+      - ./init-db:/container-entrypoint-initdb.d
     restart: always
     healthcheck:
       test: ["CMD", "healthcheck.sh"]
@@ -177,7 +203,7 @@ volumes:
 | Item | Valor |
 |------|-------|
 | Usuário | `RM565468` |
-| Senha | `310106` |
+| Senha | `Fiap@2tdsmvs` |
 | Porta | `1521` |
 | Service Name | `XEPDB1` |
 
@@ -255,15 +281,6 @@ Cadastro completo de **Tutor + Pet + Evento** em uma única requisição:
 
 ---
 
-## 🌐 Swagger
-
-A documentação interativa da API está disponível em:
-
-```
-http://52.247.24.18:8080/swagger
-```
-
----
 
 ## ☁️ Script de Provisionamento Azure
 
@@ -278,7 +295,7 @@ VM_NAME="vmdocker565468"
 IMAGE="dockerinc1694120899427:devbox_azuremachine:devboxlicensefpromo:4.41.2"
 SIZE="Standard_D2s_v3"
 ADMIN_USERNAME="rm565468"
-ADMIN_PASSWORD="<SENHA_OCULTADA>"
+ADMIN_PASSWORD="Fiap@2tdsmvs"
 DISK_SKU="StandardSSD_LRS"
 PORT=3389
 SHUTDOWN_TIME="0230"
@@ -319,12 +336,18 @@ echo "Provisionamento concluído!"
 
 ## 🛠️ Como Executar — Passo a Passo
 
-### 1️⃣ Clonar o Repositório
+### 1️⃣ Limpar o Ambiente Docker 
 
 ```bash
-cd ~
+docker compose down -v
+docker system prune -a -f --volumes
+```
+
+### 2️⃣ Clonar o Repositório
+
+```bash
 git clone https://github.com/riquelmee06/challenge-cloud-computing-1-2-2026.git
-cd ~/challenge-cloud-computing-1-2-2026
+cd /challenge-cloud-computing-1-2-2026
 ```
 
 ### 2️⃣ Limpar o Ambiente Docker (opcional)
@@ -376,24 +399,6 @@ http://52.247.24.18:8080/swagger
 
 ---
 
-## 🧹 Encerramento do Ambiente
-
-### Derrubar os Containers
-
-```bash
-docker compose down
-```
-
-### Remover Infraestrutura Azure
-
-```bash
-az group delete \
-  --name rg-challenge-565468 \
-  --yes \
-  --no-wait
-```
-
----
 
 ## ✅ Checklist de Evidências
 
