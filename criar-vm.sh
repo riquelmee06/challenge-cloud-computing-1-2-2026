@@ -8,7 +8,6 @@ IMAGE="dockerinc1694120899427:devbox_azuremachine:devboxlicensefpromo:4.41.2"
 SIZE="Standard_D2s_v3"
 ADMIN_USERNAME="rm565468"
 ADMIN_PASSWORD="Fiap@2tdsvms"
-DISK_SKU="StandardSSD_LRS"
 
 PORT=3389
 SHUTDOWN_TIME="0230" 
@@ -28,13 +27,12 @@ az vm create \
   --authentication-type password \
   --admin-username $ADMIN_USERNAME \
   --admin-password $ADMIN_PASSWORD \
-  --os-disk-sku $DISK_SKU \
   --public-ip-sku Standard
 
 echo "Abrindo portas para RDP, API (8080) e Banco Oracle (1521)..."
 az vm open-port --port $PORT --resource-group $RESOURCE_GROUP --name $VM_NAME --priority 1003
-az vm open-port --port 8080 --resource-group $RESOURCE_GROUP --name $VM_NAME
-az vm open-port --port 1521 --resource-group $RESOURCE_GROUP --name $VM_NAME
+az vm open-port --port 8080 --resource-group $RESOURCE_GROUP --name $VM_NAME --priority 1004
+az vm open-port --port 1521 --resource-group $RESOURCE_GROUP --name $VM_NAME --priority 1005
 
 echo "Configurando desligamento automático às $SHUTDOWN_TIME (UTC)..."
 az vm auto-shutdown \
