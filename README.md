@@ -11,7 +11,7 @@
 | Enzo Franchin de Souza | RM 565677 |
 | Lucas da Silva Lima | RM 562118 |
 | Riquelme Nascimento | RM 565468 |
-| Yasmin Nathalin Miranda dos Santos | RM 561565 |
+| Yasmin Nathalin Miranda dos Santos | RM 561365 |
 
 ---
 
