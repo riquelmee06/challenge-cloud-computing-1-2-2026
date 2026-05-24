@@ -28,11 +28,11 @@ az vm create \
   --authentication-type password \
   --admin-username $ADMIN_USERNAME \
   --admin-password $ADMIN_PASSWORD \
-  --storage-sku $DISK_SKU \
+  --os-disk-sku $DISK_SKU \
   --public-ip-sku Standard
 
 echo "Abrindo portas para RDP, API (8080) e Banco Oracle (1521)..."
-az vm open-port --port $PORT --resource-group $RESOURCE_GROUP --name $VM_NAME
+az vm open-port --port $PORT --resource-group $RESOURCE_GROUP --name $VM_NAME --priority 1003
 az vm open-port --port 8080 --resource-group $RESOURCE_GROUP --name $VM_NAME
 az vm open-port --port 1521 --resource-group $RESOURCE_GROUP --name $VM_NAME
 
